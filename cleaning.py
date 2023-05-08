@@ -6,7 +6,6 @@ excel_file = 'Online_Retail.xlsx'
 # Read the Excel file into a pandas DataFrame
 data = pd.read_excel(excel_file)
 
-
 # Convert InvoiceDate column to datetime format
 data['InvoiceDate'] = pd.to_datetime(data['InvoiceDate'])
 
@@ -18,9 +17,6 @@ data.sort_values('CustomerID', inplace=True)
 
 # Find the maximum CustomerID
 max_customer_id = data['CustomerID'].max()
-
-# Revert the sorting and restore the original order
-data.sort_index(inplace=True)
 
 # Create a dictionary to store the mapping of unique InvoiceNo to a new CustomerID
 unique_invoice_mapping = {}
@@ -37,8 +33,7 @@ for index, row in data.iterrows():
 
 # Update the CustomerID column with the new unique CustomerIDs
 data['CustomerID'] = data.apply(lambda row: unique_invoice_mapping[row['InvoiceNo']]
-                                if pd.isnull(row['CustomerID']) else row['CustomerID'], axis=1)
-
+if pd.isnull(row['CustomerID']) else row['CustomerID'], axis=1)
 
 # Save the updated DataFrame to a new Excel file
 data.to_excel('cleaned_data.xlsx', index=False)
