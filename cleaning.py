@@ -35,5 +35,12 @@ if pd.isnull(row['CustomerID']) else row['CustomerID'], axis=1)
 # Move 'InvoiceTime' column right after 'InvoiceDate'
 data.insert(data.columns.get_loc('InvoiceDate') + 1, 'InvoiceTime', data.pop('InvoiceTime'))
 
+# Fill empty cells in Description column based on StockCode
+data['Description'] = data.groupby('StockCode')['Description'].transform(
+    lambda x: x.fillna(x.mode().iloc[0]) if not x.mode().empty else '')
+
+# Trim values in Description column
+data['Description'] = data['Description'].str.strip(' ,.')
+
 # Save the updated DataFrame to a new Excel file
 data.to_excel('cleaned_data.xlsx', index=False)
