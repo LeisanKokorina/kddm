@@ -40,6 +40,8 @@ def frequency(item_lst, transactions, check):
             temp_i = {itemset}
         # In later passes, these are k-itemsets
         else:
+
+            print(itemset)
             temp_i = set(itemset)
         # Iterate over transactions
         for transaction in transactions.values():
@@ -73,7 +75,6 @@ def get_support(items_counts, transactions):
 def main(min_support, file_path):
     # Load dataset
     transactions = load_data(file_path)
-
     # Create set of unique items over all transactions
     items_lst = set()
     # Iterate over transactions
@@ -81,23 +82,32 @@ def main(min_support, file_path):
         # Iterate over items in the transaction
         for item in itemset:
             items_lst.add(item)
-
+    print("ITEMLIST")
+    print(items_lst)
     # Find counts of all 1-itemsets (check=False denotes the first pass)
-    items_counts = frequency(items_lst, transactions, check=False)
+    items_counts = frequency(items_lst, transactions, check=True)
+    print("ITEMCOUNTS")
+    print(items_counts)
 
     # Initialize the list that holds frequent itemsets
     freq_itemsets = list()
     # Find support of all 1-itemsets
     support = get_support(items_counts, transactions).items()
+    print("SUPPORT")
+    print(support)
     # Iterate over 1-itemsets
     for j in support:
         # Check whether support is bigger or equal to min support
         if j[1] >= min_support:
             # Add the itemset to frequent itemsets
             freq_itemsets.append({j[0]: j[1]})
+    print("FREQ ITEMS")
+    print(freq_itemsets)
 
     # Find number of items in each transaction
     no_trans = [len(itemset) for itemset in transactions.values()]
+    print("NUMBER OF TRANS")
+    print(no_trans)
     # Repeat for 2+ itemsets
     for k in range(2, max(no_trans) + 1):
         # All combinations of itemsets: k-length tuples, in sorted order, no repeated elements
@@ -111,11 +121,13 @@ def main(min_support, file_path):
             # Check whether support is bigger or equal to min support
             if j[1] >= min_support:
                 freq_itemsets.append({j[0]: j[1]})
-
+    print("FREQ ITEMS AGAIN")
+    print(freq_itemsets)
+    exit()
     return transactions, freq_itemsets
 
 
-transactions, freq_itemsets = main(0.5, 'cleaned_data.xlsx')
+transactions, freq_itemsets = main(0.00001, 'retail_sample_3k.xlsx')
 print(transactions)
 print(freq_itemsets)
 
