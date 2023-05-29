@@ -12,6 +12,9 @@ data['InvoiceDate'] = data['InvoiceDate'].astype(str)
 # Split 'InvoiceDate' column into 'InvoiceDate' and 'InvoiceTime' columns
 data[['InvoiceDate', 'InvoiceTime']] = data['InvoiceDate'].str.split(' ', 1, expand=True)
 
+# Move 'InvoiceTime' column right after 'InvoiceDate'
+data.insert(data.columns.get_loc('InvoiceDate') + 1, 'InvoiceTime', data.pop('InvoiceTime'))
+
 # Find the maximum CustomerID
 max_customer_id = data['CustomerID'].max()
 
@@ -31,9 +34,6 @@ for index, row in data.iterrows():
 # Update the CustomerID column with the new unique CustomerIDs
 data['CustomerID'] = data.apply(lambda row: unique_invoice_mapping[row['InvoiceNo']]
 if pd.isnull(row['CustomerID']) else row['CustomerID'], axis=1)
-
-# Move 'InvoiceTime' column right after 'InvoiceDate'
-data.insert(data.columns.get_loc('InvoiceDate') + 1, 'InvoiceTime', data.pop('InvoiceTime'))
 
 # Fill empty cells in Description column based on StockCode
 data['Description'] = data.groupby('StockCode')['Description'].transform(
