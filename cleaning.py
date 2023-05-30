@@ -10,7 +10,7 @@ data = pd.read_excel(excel_file)
 data['InvoiceDate'] = data['InvoiceDate'].astype(str)
 
 # Split 'InvoiceDate' column into 'InvoiceDate' and 'InvoiceTime' columns
-data[['InvoiceDate', 'InvoiceTime']] = data['InvoiceDate'].str.split(' ', 1, expand=True)
+data[['InvoiceDate', 'InvoiceTime']] = data['InvoiceDate'].str.split(pat=' ', n=1, expand=True)
 
 # Move 'InvoiceTime' column right after 'InvoiceDate'
 data.insert(data.columns.get_loc('InvoiceDate') + 1, 'InvoiceTime', data.pop('InvoiceTime'))
@@ -41,6 +41,18 @@ data['Description'] = data.groupby('StockCode')['Description'].transform(
 
 # Trim values in Description column
 data['Description'] = data['Description'].str.strip(' ,.')
+
+# Remove extra whitespace in the "Description" column
+data['Description'] = data['Description'].str.replace(r'\s+', ' ', regex=True)
+
+# Find duplicate rows based on all columns except "Quantity"
+duplicate_rows = data.duplicated(subset=data.columns.difference(['Quantity']), keep='first')
+
+# Update the "Quantity" column for unique rows by summing the values
+data['Quantity'] = data.groupby(data.columns.tolist()[:-1])['Quantity'].transform('sum')
+
+# Remove the duplicate rows
+data = data[~duplicate_rows]
 
 # Save the updated DataFrame to a new Excel file
 data.to_excel('cleaned_data.xlsx', index=False)
