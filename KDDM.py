@@ -15,6 +15,30 @@ data = pd.read_excel(excel_file)
 data.info()
 
 
+#Top 10 Products in amount
+data.loc[:, 'amount'] = data["Quantity"]*data["UnitPrice"]
+
+
+# In[98]:
+
+
+AmoutSum = data.groupby(["Description"]).amount.sum().sort_values(ascending = False)
+
+
+# In[101]:
+
+
+import numpy as np
+
+
+# In[102]:
+
+
+inv = data[["Description", "InvoiceNo"]].groupby(["Description"]).InvoiceNo.unique().\
+      agg(np.size).sort_values(ascending = False)
+
+
+
 # In[3]:
 
 
@@ -92,6 +116,55 @@ for i, rule in enumerate(rules_list[:50]):
     print(f"Confidence: {rule['Confidence']}")
     print(f"Lift: {rule['Lift']}")
     print("=====================================")
+    
+# Another set of Print Rules, where Printing all the rules' items. In previous set, only two items are printed.
+# =======================================================================
+transactions_set = [set(transaction) for transaction in transactions]
+
+# Convert rules into a list of dictionaries to facilitate sorting
+rules_list = []
+seen_rules = set()  # This set will store seen rules
+
+for item in association_rules:
+    # first index of the inner list
+    # Contains base item and add item
+    pair = item[0] 
+    items = [x for x in pair]
+
+    # Create a tuple representing the rule, ensuring the items are always in the same order
+    rule_tuple = tuple(sorted(items))
+
+    # Skip this rule if we've already seen it
+    if rule_tuple in seen_rules:
+        continue
+
+    # Otherwise, remember this rule and proceed with adding it to the list
+    seen_rules.add(rule_tuple)
+
+    # Find the transactions where this rule's items appear together
+    matching_transactions = [t for t in transactions_set if set(items).issubset(t)]
+
+    # Form the rule as a string
+    rule_str = ' -> '.join(items)
+
+    rule_dict = {'Rule': rule_str,
+                 'Support': item[1],
+                 'Confidence': item[2][0][2],
+                 'Lift': item[2][0][3]}
+
+    rules_list.append(rule_dict)
+
+# Now proceed as before, sorting and printing the rules
+rules_list.sort(key=lambda x: x['Support'], reverse=True)
+
+# Print top 50 rules
+for i, rule in enumerate(rules_list[:50]):
+    print(f"Rule {i+1}: {rule['Rule']}")
+    print(f"Support: {rule['Support']}")
+    print(f"Confidence: {rule['Confidence']}")
+    print(f"Lift: {rule['Lift']}")
+    print("=====================================")
+
 
 
 
