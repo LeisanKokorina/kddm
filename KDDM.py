@@ -15,6 +15,30 @@ data = pd.read_excel(excel_file)
 data.info()
 
 
+#Top 10 Products in amount
+data.loc[:, 'amount'] = data["Quantity"]*data["UnitPrice"]
+
+
+# In[98]:
+
+
+AmoutSum = data.groupby(["Description"]).amount.sum().sort_values(ascending = False)
+
+
+# In[101]:
+
+
+import numpy as np
+
+
+# In[102]:
+
+
+inv = data[["Description", "InvoiceNo"]].groupby(["Description"]).InvoiceNo.unique().\
+      agg(np.size).sort_values(ascending = False)
+
+
+
 # In[3]:
 
 
