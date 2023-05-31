@@ -1,2 +1,10 @@
 1. Loading the excel file
-2. 
+2. Spliting 'InvoiceDate' column into 'InvoiceDate' and new 'InvoiceTime' column
+3. Transforming StockCode to uppercase
+4. Updating the empty CustomerID column with the new unique CustomerIDs
+5. Transforming 'Description' column to uppercase
+6. Trimming Description (deleting * characters in the beginnig of the text, trimming extra whitespaces)
+7. Filling empty cells in Description column based on StockCode
+8. Filling empty cells in UnitPrice column when UnitPrice is 0 based on StockCode
+9. Finding duplicate rows based on all columns except "Quantity", updating the "Quantity" column for unique rows by summing the values, removing duplicates
+10. Saving the updated DataFrame to a new Excel file
